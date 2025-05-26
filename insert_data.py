@@ -262,17 +262,17 @@ def insert_into_table(table):
         conn.close()
 
     # Add helpful information section
-    st.markdown("---")
-    st.markdown("### 💡 Tips for Data Entry")
-    st.markdown("""
-    - **Required fields** are marked with an asterisk (*)
-    - **Foreign Key Dependencies**: Make sure referenced records exist first:
-      - Companies need Industries to exist first
-      - Episodes need Seasons to exist first  
-      - Asks need Episodes, Seasons, and Companies to exist first
-      - Investments need Episodes, Seasons, and Companies to exist first
-      - Contributions need Investments and Sharks to exist first
-      - Ownership needs Companies and Entrepreneurs to exist first
-      - Judge assignments need Episodes, Seasons, and Sharks to exist first
-    - **Recommended insertion order**: Industry → Season → Shark → Entrepreneur → Episode → Company → Own → Ask → Investment → Contribute → Judge
-    """)
+    # st.markdown("---")
+    # st.markdown("### 💡 Tips for Data Entry")
+    # st.markdown("""
+    # - **Required fields** are marked with an asterisk (*)
+    # - **Foreign Key Dependencies**: Make sure referenced records exist first:
+    #   - Companies need Industries to exist first
+    #   - Episodes need Seasons to exist first  
+    #   - Asks need Episodes, Seasons, and Companies to exist first
+    #   - Investments need Episodes, Seasons, and Companies to exist first
+    #   - Contributions need Investments and Sharks to exist first
+    #   - Ownership needs Companies and Entrepreneurs to exist first
+    #   - Judge assignments need Episodes, Seasons, and Sharks to exist first
+    # - **Recommended insertion order**: Industry → Season → Shark → Entrepreneur → Episode → Company → Own → Ask → Investment → Contribute → Judge
+    # """)

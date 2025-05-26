@@ -165,7 +165,20 @@ if st.session_state.page == "main":
     with tab3:
         st.subheader("Insert Data into Tables")
 
-        st.markdown("Entities should be inserted before relationships.")
+        st.markdown("---")
+        st.markdown("### 💡 Tips for Data Entry")
+        st.markdown("""
+        - **Required fields** are marked with an asterisk (*)
+        - **Foreign Key Dependencies**: Make sure referenced records exist first:
+        - Companies need Industries to exist first
+        - Episodes need Seasons to exist first  
+        - Asks need Episodes, Seasons, and Companies to exist first
+        - Investments need Episodes, Seasons, and Companies to exist first
+        - Contributions need Investments and Sharks to exist first
+        - Ownership needs Companies and Entrepreneurs to exist first
+        - Judge assignments need Episodes, Seasons, and Sharks to exist first
+        - **Recommended insertion order**: Industry → Season → Shark → Entrepreneur → Episode → Company → Own → Ask → Investment → Contribute → Judge
+        """)
 
         tables = [
             "Ask", "Company", "Contribute", "Entrepreneur", "Episode", "Industry",  
