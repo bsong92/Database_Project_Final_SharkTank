@@ -1,6 +1,7 @@
 import plotly.express as px
 import networkx as nx
 import plotly.graph_objects as go
+import pandas as pd
 
 def plot_valuation_chart(df):
     return px.bar(
@@ -96,6 +97,13 @@ def plot_strategy_heatmap(df):
     if df.empty:
         return px.imshow([[0]], labels=dict(x="Industry", y="Shark", color="Investments"))
 
+    # Step 1: Calculate total investments per shark
+    total_by_shark = df.groupby("shark_name")["investment_count"].sum().sort_values()
+
+    # Step 2: Apply the sorted order to the 'shark_name' column
+    df["shark_name"] = pd.Categorical(df["shark_name"], categories=total_by_shark.index, ordered=True)
+
+    # Step 3: Plot
     fig = px.density_heatmap(
         df,
         x="industry_name",

@@ -39,7 +39,7 @@ if st.session_state.page == "main":
     """)
 
     # Global sidebar filters (visible to all tabs)
-    st.sidebar.header("Global Filters")
+    st.sidebar.header("Possible Values")
     industry_data = get_filtered_data("industry") or []
     industry = st.sidebar.selectbox("Industry", options=["All"] + industry_data)
     season_data = get_filtered_data("season") or []
@@ -149,11 +149,11 @@ if st.session_state.page == "main":
         else:
             st.warning("No investment strategy data found.")
 
-        st.info("This section will show strategy visuals by shark, episode, and industry.")
+        # st.info("This section will show strategy visuals by shark, episode, and industry.")
 
-        st.markdown("### 🔗 Shark Co-Investment Network")
-        net_df = get_filtered_data("network", filters)
-        st.plotly_chart(plot_network_graph(net_df))
+        # st.markdown("### 🔗 Shark Co-Investment Network")
+        # net_df = get_filtered_data("network", filters)
+        # st.plotly_chart(plot_network_graph(net_df))
 
         # st.markdown("### 💰 Top 10 Valuations by Company")
         # valuation_df = get_filtered_data("valuation", filters)
