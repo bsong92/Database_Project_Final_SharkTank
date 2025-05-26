@@ -62,8 +62,9 @@ if st.session_state.page == "main":
     with tab1:
         st.subheader("Explore the Data")
 
+        # Add query list and description mapping
         query_list = [
-            "1. Industries with most appearances and deal rates",
+            "1. Industries with Most Appearances and Deal Rates",
             "2. Average & Range of Offers per Industry",
             "3. Valuation trends across seasons",
             "4. Shark collaboration patterns",
@@ -77,26 +78,44 @@ if st.session_state.page == "main":
             "12. Episodes with highest accepted deal count"
         ]
 
-        selected_query = st.selectbox("Choose a query to run:", query_list)
-        user_input = None
+    # 🔹 Add description dictionary
+    query_descriptions = {
+        "1. Industries with Most Appearances and Deal Rates": "Industries ranked by how often they appear and how frequently they get deals.",
+        "2. Average & Range of Offers per Industry": "Shows min, max, and average offer amounts and equity across industries.",
+        "3. Valuation trends across seasons": "Traces average valuation trends of companies across seasons.",
+        "4. Shark collaboration patterns": "Visualizes which sharks tend to invest together.",
+        "5. Top sharks by deal frequency & total investment": "Ranks sharks by deal count and total amount invested.",
+        "6. Shark deal rate by episode and industry": "Breaks down how often sharks invest by episode and industry.",
+        "7. Effect of guest shark presence on deals": "Analyzes if guest sharks affect deal frequency.",
+        "8. Impact of pitch order on success": "Explores whether pitch order affects success rate.",
+        "9. Entrepreneurs from a given city/state and their deal stats": "Finds entrepreneurs from a location and their deal outcomes.",
+        "10. Entrepreneurs by industry and their deal stats": "Compares entrepreneur success across industries.",
+        "11. Companies with highest total amount offered": "Shows companies that received the largest offers.",
+        "12. Episodes with highest accepted deal count": "Ranks episodes by number of accepted deals."
+    }
 
-        if "industry" in selected_query.lower():
-            user_input = st.text_input("Enter Industry (optional):")
-        elif "city" in selected_query.lower() or "state" in selected_query.lower():
-            user_input = st.text_input("Enter City or State (optional):")
+    # 🔹 Select and run query
+    selected_query = st.selectbox("Choose a query to run:", query_list)
+    user_input = None
 
-        if st.button("Run Query"):
-            df = run_query(selected_query, user_input)
-            if df is not None and not df.empty:
-                # Format numeric columns: commas + 2 decimal points
-                formatted_df = df.copy()
-                for col in formatted_df.select_dtypes(include=['float', 'int']).columns:
-                    formatted_df[col] = formatted_df[col].apply(lambda x: f"{x:,.2f}")
+    if "industry" in selected_query.lower():
+        user_input = st.text_input("Enter Industry (optional):")
+    elif "city" in selected_query.lower() or "state" in selected_query.lower():
+        user_input = st.text_input("Enter City or State (optional):")
 
-                st.dataframe(formatted_df)
-                st.download_button("Export CSV", df.to_csv(index=False), "results.csv")
-            else:
-                st.warning("No results found.")
+    if st.button("Run Query"):
+        df = run_query(selected_query, user_input)
+
+        # 🔹 Show query description before results
+        description = query_descriptions.get(selected_query)
+        if description:
+            st.markdown(f"**Query Summary:** {description}")
+
+        if df is not None and not df.empty:
+            st.dataframe(df)
+            st.download_button("Export CSV", df.to_csv(index=False), "results.csv")
+        else:
+            st.warning("No results found.")
 
     with tab2:
         st.subheader("📈 Strategy and 🔗 Networking Visuals")

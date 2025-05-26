@@ -5,7 +5,7 @@ from db import connect_db
 def run_query(query_name, user_input=None):
     conn = connect_db()
 
-    if "Industries with most appearances" in query_name:
+    if "Industries with Most Appearances and Deal Rates" in query_name:
         sql = """
             SELECT 
                 C.industry_name,
