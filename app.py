@@ -3,6 +3,7 @@ from db import get_filtered_data
 from charts import plot_valuation_chart, plot_network_graph, plot_strategy_heatmap
 from query_logic import run_query
 from insert_data import insert_into_table
+import pandas as pd
 
 st.set_page_config(layout="wide")
 
@@ -57,7 +58,7 @@ if st.session_state.page == "main":
         "guest": guest_status
     }
 
-    tab1, tab2, tab3 = st.tabs(["📊 Query Explorer", "📈 Strategy & Networking", "➕ Insert Data"])
+    tab1, tab2, tab3, tab4 = st.tabs(["📊 Query Explorer", "📈 Strategy & Networking", "➕ Insert Data", "📂 Browse Raw Data"])
 
     with tab1:
         st.subheader("Explore the Data")
@@ -96,6 +97,12 @@ if st.session_state.page == "main":
             "13. Average investment stats per season": "Tracks the number, total, and average of investments made per season.",
         }
 
+        st.markdown("**Available Queries:**")
+        for q in query_list:
+            st.markdown(f"- {q}")
+
+        st.markdown("---")
+        
         # 🔹 Select and run query
         selected_query = st.selectbox("Choose a query to run:", query_list)
         user_input = None
@@ -152,3 +159,41 @@ if st.session_state.page == "main":
         ]
         selected_table = st.selectbox("Select a table to insert into:", tables)
         insert_into_table(selected_table)
+
+    with tab4:
+        st.subheader("📁 Browse Raw Data")
+
+        # List of all core tables
+        table_options = [
+            "Company", "Investment", "Industry", "Entrepreneur",
+            "Episode", "Season", "Shark", "Ask", "Contribute", "Own", "Judge"
+        ]
+        selected_table = st.selectbox("Select a table to view:", table_options)
+
+        if selected_table:
+            df = get_filtered_data("raw_table", {"table": selected_table})
+            df = pd.DataFrame(df)
+            if not df.empty:
+                st.dataframe(df)
+                st.download_button("Download CSV", df.to_csv(index=False), f"{selected_table.lower()}_data.csv")
+            else:
+                st.info("No data found in selected table.")
+    
+    # with tab4:
+    #     st.subheader("📂 Browse Raw Data")
+    #     st.markdown("Select a table and use the global filters on the left to browse the data.")
+        
+    #     raw_tables = [
+    #         "Company", "Entrepreneur", "Episode", "Industry", "Season", 
+    #         "Shark", "Investment", "Ask", "Own", "Judge", "Contribute"
+    #     ]
+        
+    #     selected_table = st.selectbox("Select a table to view:", raw_tables, key="raw_table_select")
+
+    #     df = get_filtered_data(selected_table.lower(), filters)
+
+    #     if df is not None and not df.empty:
+    #         st.dataframe(df)
+    #         st.download_button("Download CSV", df.to_csv(index=False), "raw_data.csv")
+    #     else:
+    #         st.info("No data found for selected table and filters.")

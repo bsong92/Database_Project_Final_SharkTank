@@ -68,6 +68,44 @@ def get_filtered_data(category, filters=None):
         conn.close()
         return df
 
+    elif category == "raw_table":
+        if filters and "table" in filters:
+            table = filters["table"]
+            try:
+                df = pd.read_sql(f"SELECT * FROM {table}", connect_db())
+                return df
+            except Exception as e:
+                print(f"Error loading table {table}: {e}")
+                return pd.DataFrame()
+        
+    # elif category.lower() in [
+    #     "company", "investment", "industry", "entrepreneur", "episode", "season", "shark", "ask", "contribute", "own", "judge"
+    # ]:
+    #     base_query = f"SELECT * FROM {category}"
+    #     where_clauses = []
+
+    #     if filters:
+    #         if category == "company" and filters.get("industry") != "All":
+    #             where_clauses.append(f"industry_name = '{filters['industry']}'")
+
+    #         if category == "entrepreneur" and filters.get("city") != "All":
+    #             where_clauses.append(f"location_city = '{filters['city']}'")
+
+    #         if category == "episode" and filters.get("season") != "All":
+    #             where_clauses.append(f"season_id = {filters['season']}")
+
+    #         # Add more filter logic as needed...
+
+    #     if where_clauses:
+    #         base_query += " WHERE " + " AND ".join(where_clauses)
+
+    #     try:
+    #         df = pd.read_sql(base_query, conn)
+    #         conn.close()
+    #         return df
+    #     except Exception as e:
+    #         print(f"Query failed: {e}")
+    #         return pd.DataFrame()
 
     # Fallback: return an empty list if category is unknown
     return []
