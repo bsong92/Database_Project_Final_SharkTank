@@ -326,17 +326,32 @@ def run_query(query_name, user_input=None):
         """
 
     elif "Average investment stats per season" in query_name:
-        # QUERY 13
+        # QUERY 13: Average investment stats per season with deal success rate
+        # PURPOSE: Analyze investment patterns and success rates across seasons
+        # BUSINESS LOGIC: Shows financial metrics and deal success rates per season
+        # TECHNICAL APPROACH:
+        # - Uses Ask table to get all companies that pitched per season
+        # - LEFT JOIN with Investment to identify successful deals
+        # - Replicates Query 8 logic: AVG(CASE WHEN...) for deal success rate calculation
+        # - COUNT(DISTINCT A.company_id) for total pitches per season
+        # - COUNT(DISTINCT I.investment_id) for successful deals per season
+        # - Financial aggregations only on successful investments
+        # - Deal success rate = successful_deals / total_pitches
         sql = """
         SELECT
             S.season_id,
-            COUNT(I.investment_id) AS total_investments,
-            SUM(I.equity_amount) AS total_invested,
+            COUNT(DISTINCT A.company_id) AS total_pitches,
+            COUNT(DISTINCT I.investment_id) AS total_investments,
+            ROUND(
+                AVG(CASE WHEN I.investment_id IS NOT NULL THEN 1.0 ELSE 0.0 END), 3
+            ) AS deal_success_rate,
+            COALESCE(SUM(I.equity_amount), 0) AS total_invested,
             ROUND(AVG(I.equity_amount), 0) AS avg_investment
-        FROM Company C
-        JOIN Investment I ON I.company_id = C.company_id
-        JOIN Season S ON I.season_id = S.season_id
+        FROM Season S
+        LEFT JOIN Ask A ON S.season_id = A.season_id
+        LEFT JOIN Investment I ON A.company_id = I.company_id AND A.season_id = I.season_id AND A.episode_id = I.episode_id
         GROUP BY S.season_id
+        HAVING COUNT(DISTINCT A.company_id) > 0  -- Only seasons with pitches
         ORDER BY S.season_id;
         """
 
