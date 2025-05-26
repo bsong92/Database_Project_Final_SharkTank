@@ -46,6 +46,8 @@ if st.session_state.page == "main":
     season = st.sidebar.selectbox("Season", options=["All"] + season_data)
     city_data = get_filtered_data("city") or []
     city = st.sidebar.selectbox("City", options=["All"] + city_data)
+    state_data = get_filtered_data("state") or []
+    state = st.sidebar.selectbox("State", options=["All"] + state_data)
     shark_data = get_filtered_data("shark") or []
     shark = st.sidebar.selectbox("Shark", options=["All"] + shark_data)
     guest_status = st.sidebar.selectbox("Guest Status", options=["All", "Guest", "Main Shark"])
@@ -55,6 +57,7 @@ if st.session_state.page == "main":
         "shark": shark,
         "season": season,
         "city": city,
+        "state": state,
         "guest": guest_status
     }
 

@@ -26,6 +26,10 @@ def get_filtered_data(category, filters=None):
         cursor.execute("SELECT DISTINCT location_city FROM Entrepreneur")
         return [row["location_city"] for row in cursor.fetchall()]
     
+    if category == "state":
+        cursor.execute("SELECT DISTINCT location_state FROM Entrepreneur")
+        return [row["location_state"] for row in cursor.fetchall()]
+    
     if category == "valuation":
         query = """
             SELECT 
