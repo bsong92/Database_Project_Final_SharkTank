@@ -16,6 +16,15 @@ def run_query(query_name, user_input=None):
     conn = connect_db()
 
     if "Industries with Most Appearances and Deal Rates" in query_name:
+        # QUERY 1: Industries with Most Appearances and Deal Rates
+        # PURPOSE: Identify which industries are most represented and how often they land deals
+        # BUSINESS LOGIC: Measures deal-making success by comparing appearance frequency vs. deal frequency
+        # TECHNICAL APPROACH:
+        # - COUNT(*) counts how many companies appear per industry
+        # - SUM(CASE...) counts how many got a deal (investment_id not null)
+        # - Calculates deal rate = deal_count / total_appearances
+        # - Uses ROUND and CONCAT to present as percentage string
+        # - GROUP BY industry for aggregation
         sql = """
             SELECT 
                 C.industry_name,
@@ -29,6 +38,14 @@ def run_query(query_name, user_input=None):
         """
 
     elif "Average & Range of Offers per Industry" in query_name:
+        # QUERY 2: Average & Range of Offers per Industry
+        # PURPOSE: Summarize investment behavior by showing offer ranges and equity per industry
+        # BUSINESS LOGIC: Provides insight into typical deal structures and how aggressive asks are
+        # TECHNICAL APPROACH:
+        # - MIN, MAX, and AVG functions calculate range and average of equity_amount
+        # - AVG equity_share converted to percentage
+        # - FORMAT for rounding and thousands separators
+        # - GROUP BY industry to aggregate metrics
         sql = """
         SELECT 
             C.industry_name,
