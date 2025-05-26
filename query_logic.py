@@ -63,7 +63,7 @@ def run_query(query_name, user_input=None):
         ORDER BY total_investment DESC;
         """
 
-    elif "Shark deal rate by episode and industry" in query_name:
+    elif "Shark deal rate" in query_name:
         sql = """
         SELECT S.shark_name, 
                COUNT(DISTINCT CASE WHEN I.investment_id IS NOT NULL THEN A.company_id END) AS successful_deals,
@@ -85,14 +85,23 @@ def run_query(query_name, user_input=None):
 
     elif "guest shark presence on deals" in query_name:
         sql = """
-        SELECT E.episode_id,
-               MAX(S.is_guest) AS has_guest,
-               COUNT(DISTINCT I.investment_id) AS deals
-        FROM Episode E
-        JOIN Judge J ON E.episode_id = J.episode_id
-        JOIN Shark S ON J.shark_id = S.shark_id
-        LEFT JOIN Investment I ON E.episode_id = I.episode_id
-        GROUP BY E.episode_id;
+        SELECT 
+            CASE WHEN has_guest = 1 THEN 'Yes' ELSE 'No' END AS has_guest,
+            AVG(deal_count) AS average_deal_count
+        FROM (
+            SELECT 
+                E.episode_id,
+                E.season_id,
+                MAX(S.is_guest) AS has_guest,
+                COUNT(DISTINCT I.investment_id) AS deal_count
+            FROM Episode E
+            JOIN Judge J ON E.episode_id = J.episode_id AND E.season_id = J.season_id
+            JOIN Shark S ON J.shark_id = S.shark_id
+            LEFT JOIN Investment I ON E.episode_id = I.episode_id AND E.season_id = I.season_id
+            GROUP BY E.episode_id, E.season_id
+        ) AS episode_stats
+        GROUP BY has_guest
+        ORDER BY has_guest DESC;
         """
 
     elif "pitch order on success" in query_name:
@@ -119,24 +128,44 @@ def run_query(query_name, user_input=None):
 
     elif "Entrepreneurs from a given city" in query_name:
         sql = f"""
-        SELECT E.entrepreneur_name, E.location_city, C.company_name, I.equity_amount
+        SELECT 
+            E.location_city AS city,
+            E.location_state AS state,
+            COUNT(DISTINCT C.company_id) AS total_companies,
+            COUNT(DISTINCT CASE WHEN I.investment_id IS NOT NULL THEN C.company_id END) AS companies_with_deals,
+            ROUND(
+                COUNT(DISTINCT CASE WHEN I.investment_id IS NOT NULL THEN C.company_id END) * 1.0 / 
+                NULLIF(COUNT(DISTINCT C.company_id), 0), 3
+            ) AS deal_success_rate
         FROM Entrepreneur E
         JOIN Own O ON E.entrepreneur_id = O.entrepreneur_id
         JOIN Company C ON O.company_id = C.company_id
         LEFT JOIN Investment I ON C.company_id = I.company_id
         WHERE E.location_city LIKE '%{user_input if user_input else ''}%'
-        ORDER BY E.entrepreneur_name;
+        GROUP BY E.location_city, E.location_state
+        HAVING COUNT(DISTINCT C.company_id) >= 2  -- Only show cities with at least 2 companies
+        ORDER BY deal_success_rate DESC, total_companies DESC;
         """
 
     elif "Entrepreneurs by industry" in query_name:
         sql = f"""
-        SELECT E.entrepreneur_name, C.company_name, C.industry_name, I.equity_amount
+        SELECT 
+            C.industry_name AS industry,
+            COUNT(DISTINCT C.company_id) AS total_companies,
+            COUNT(DISTINCT CASE WHEN I.investment_id IS NOT NULL THEN C.company_id END) AS companies_with_deals,
+            ROUND(
+                COUNT(DISTINCT CASE WHEN I.investment_id IS NOT NULL THEN C.company_id END) * 1.0 / 
+                NULLIF(COUNT(DISTINCT C.company_id), 0), 3
+            ) AS deal_success_rate,
+            ROUND(AVG(CASE WHEN I.investment_id IS NOT NULL THEN I.equity_amount END), 2) AS average_amount_raised
         FROM Entrepreneur E
         JOIN Own O ON E.entrepreneur_id = O.entrepreneur_id
         JOIN Company C ON O.company_id = C.company_id
         LEFT JOIN Investment I ON C.company_id = I.company_id
         WHERE C.industry_name LIKE '%{user_input if user_input else ''}%'
-        ORDER BY C.industry_name, E.entrepreneur_name;
+        GROUP BY C.industry_name
+        HAVING COUNT(DISTINCT C.company_id) >= 2  -- Only show industries with at least 2 companies
+        ORDER BY deal_success_rate DESC, total_companies DESC;
         """
 
     elif "highest total amount offered" in query_name:

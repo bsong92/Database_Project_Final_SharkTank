@@ -68,10 +68,10 @@ if st.session_state.page == "main":
             "3. Valuation trends across seasons",
             "4. Shark collaboration patterns",
             "5. Top sharks by deal frequency & total investment",
-            "6. Shark deal rate by episode and industry",
+            "6. Shark deal rate",
             "7. Effect of guest shark presence on deals",
             "8. Impact of pitch order on success",
-            "9. Entrepreneurs from a given city/state and their deal stats",
+            "9. Entrepreneurs from a given city and their deal success rate",
             "10. Entrepreneurs by industry and their deal stats",
             "11. Companies with highest total amount offered",
             "12. Episodes with highest accepted deal count"
