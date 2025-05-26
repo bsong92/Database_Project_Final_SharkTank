@@ -7,12 +7,15 @@ def run_query(query_name, user_input=None):
 
     if "Industries with most appearances" in query_name:
         sql = """
-        SELECT C.industry_name, COUNT(*) AS company_count,
-               SUM(CASE WHEN I.investment_id IS NOT NULL THEN 1 ELSE 0 END) AS deal_count
-        FROM Company C
-        LEFT JOIN Investment I ON C.company_id = I.company_id
-        GROUP BY C.industry_name
-        ORDER BY company_count DESC;
+            SELECT 
+                C.industry_name,
+                COUNT(*) AS Company_Count,
+                SUM(CASE WHEN I.investment_id IS NOT NULL THEN 1 ELSE 0 END) AS Deal_Count,
+                CONCAT(ROUND(SUM(CASE WHEN I.investment_id IS NOT NULL THEN 1 ELSE 0 END) / COUNT(*) * 100, 2), '%') AS Deal_Rate
+            FROM Company C
+            LEFT JOIN Investment I ON C.company_id = I.company_id
+            GROUP BY C.industry_name
+            ORDER BY company_count DESC;
         """
 
     elif "Average & Range of Offers per Industry" in query_name:
