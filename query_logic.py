@@ -20,11 +20,12 @@ def run_query(query_name, user_input=None):
 
     elif "Average & Range of Offers per Industry" in query_name:
         sql = """
-        SELECT C.industry_name,
-               MIN(A.equity_amount) AS Min_Amount,
-               MAX(A.equity_amount) AS Max_Amount,
-               AVG(A.equity_amount) AS Avg_Amount,
-               AVG(A.equity_share) AS Avg_Equity
+        SELECT 
+            C.industry_name,
+            FORMAT(MIN(A.equity_amount), 0) AS Min_Amount,
+            FORMAT(MAX(A.equity_amount), 0) AS Max_Amount,
+            FORMAT(AVG(A.equity_amount), 0) AS Avg_Amount,
+            CONCAT(FORMAT(AVG(A.equity_share), 2), '%') AS Avg_Equity
         FROM Ask A
         JOIN Company C ON A.company_id = C.company_id
         GROUP BY C.industry_name;
@@ -32,13 +33,16 @@ def run_query(query_name, user_input=None):
 
     elif "Valuation trends across seasons" in query_name:
         sql = """
-        SELECT S.season_id, C.industry_name,
-               ROUND(AVG(I.equity_amount / I.equity_share * 100), 2) AS avg_valuation
+        SELECT 
+            S.season_id, 
+            C.industry_name,
+            FORMAT(AVG(I.equity_amount / I.equity_share * 100), 2) AS avg_valuation
         FROM Investment I
         JOIN Company C ON I.company_id = C.company_id
         JOIN Season S ON I.season_id = S.season_id
         WHERE I.equity_share > 0
-        GROUP BY S.season_id, C.industry_name;
+        GROUP BY S.season_id, C.industry_name
+        ORDER BY S.season_id, AVG(I.equity_amount / I.equity_share * 100) DESC;
         """
 
     elif "Shark collaboration patterns" in query_name:
@@ -56,14 +60,14 @@ def run_query(query_name, user_input=None):
     elif "Top sharks by deal frequency" in query_name:
         sql = """
         SELECT S.shark_name,
-               COUNT(*) AS total_deals,
-               MAX(I.equity_amount) AS max_single_investment,
-               SUM(I.equity_amount) AS total_investment
+            COUNT(*) AS total_deals,
+            FORMAT(MAX(I.equity_amount), 0) AS max_single_investment,
+            FORMAT(SUM(I.equity_amount), 0) AS total_investment
         FROM Investment I
         JOIN Contribute C ON I.investment_id = C.investment_id
         JOIN Shark S ON C.shark_id = S.shark_id
         GROUP BY S.shark_name
-        ORDER BY total_investment DESC;
+        ORDER BY SUM(I.equity_amount) DESC;
         """
 
     elif "Shark deal rate by episode and industry" in query_name:

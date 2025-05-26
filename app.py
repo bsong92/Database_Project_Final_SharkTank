@@ -98,10 +98,10 @@ if st.session_state.page == "main":
     selected_query = st.selectbox("Choose a query to run:", query_list)
     user_input = None
 
-    if "industry" in selected_query.lower():
-        user_input = st.text_input("Enter Industry (optional):")
-    elif "city" in selected_query.lower() or "state" in selected_query.lower():
-        user_input = st.text_input("Enter City or State (optional):")
+    # if "industry" in selected_query.lower():
+    #     user_input = st.text_input("Enter Industry (optional):")
+    # elif "city" in selected_query.lower() or "state" in selected_query.lower():
+    #     user_input = st.text_input("Enter City or State (optional):")
 
     if st.button("Run Query"):
         df = run_query(selected_query, user_input)
