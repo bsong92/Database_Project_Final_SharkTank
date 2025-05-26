@@ -16,14 +16,6 @@ def run_query(query_name, user_input=None):
     conn = connect_db()
 
     if "Industries with most appearances" in query_name:
-        # QUERY 1: Industries with most appearances and deal rates
-        # PURPOSE: Analyze which industries appear most frequently on Shark Tank and their success rates
-        # BUSINESS LOGIC: Shows industry popularity and investment success to identify trending sectors
-        # TECHNICAL APPROACH:
-        # - LEFT JOIN to include all companies even without investments
-        # - COUNT(*) for total company appearances per industry
-        # - SUM(CASE WHEN...) to count successful deals (conditional aggregation)
-        # - GROUP BY industry to aggregate statistics per industry
         sql = """
         SELECT C.industry_name, COUNT(*) AS company_count,
                SUM(CASE WHEN I.investment_id IS NOT NULL THEN 1 ELSE 0 END) AS deal_count
@@ -34,13 +26,6 @@ def run_query(query_name, user_input=None):
         """
 
     elif "Avg & range of offers per industry" in query_name:
-        # QUERY 2: Average and range of offers per industry
-        # PURPOSE: Analyze the financial characteristics of asks by industry
-        # BUSINESS LOGIC: Shows what entrepreneurs typically ask for in each industry
-        # TECHNICAL APPROACH:
-        # - INNER JOIN between Ask and Company (only companies that made asks)
-        # - MIN/MAX/AVG aggregation functions for equity amounts and shares
-        # - GROUP BY industry to calculate statistics per industry
         sql = """
         SELECT C.industry_name,
                MIN(A.equity_amount) AS Min_Amount,
