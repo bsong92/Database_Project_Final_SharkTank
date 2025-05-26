@@ -65,14 +65,22 @@ def run_query(query_name, user_input=None):
 
     elif "Shark deal rate by episode and industry" in query_name:
         sql = """
-        SELECT S.shark_name, COUNT(DISTINCT I.company_id) AS deals,
-               COUNT(DISTINCT A.company_id) AS asks,
-               ROUND(COUNT(DISTINCT I.company_id) / COUNT(DISTINCT A.company_id), 2) AS deal_rate
+        SELECT S.shark_name, 
+               COUNT(DISTINCT CASE WHEN I.investment_id IS NOT NULL THEN A.company_id END) AS successful_deals,
+               COUNT(DISTINCT A.company_id) AS total_asks,
+               ROUND(
+                   COUNT(DISTINCT CASE WHEN I.investment_id IS NOT NULL THEN A.company_id END) * 1.0 / 
+                   NULLIF(COUNT(DISTINCT A.company_id), 0), 3
+               ) AS deal_rate
         FROM Ask A
+        JOIN Episode E ON A.episode_id = E.episode_id AND A.season_id = E.season_id
+        JOIN Judge J ON E.episode_id = J.episode_id AND E.season_id = J.season_id
+        JOIN Shark S ON J.shark_id = S.shark_id
         LEFT JOIN Investment I ON A.company_id = I.company_id AND A.season_id = I.season_id AND A.episode_id = I.episode_id
-        LEFT JOIN Contribute C ON I.investment_id = C.investment_id
-        LEFT JOIN Shark S ON C.shark_id = S.shark_id
-        GROUP BY S.shark_name;
+        LEFT JOIN Contribute C ON I.investment_id = C.investment_id AND C.shark_id = S.shark_id
+        GROUP BY S.shark_name
+        HAVING COUNT(DISTINCT A.company_id) > 0
+        ORDER BY deal_rate DESC;
         """
 
     elif "guest shark presence on deals" in query_name:
@@ -89,11 +97,24 @@ def run_query(query_name, user_input=None):
 
     elif "pitch order on success" in query_name:
         sql = """
-        SELECT E.episode_id, C.company_name, I.investment_id IS NOT NULL AS got_investment
-        FROM Episode E
-        JOIN Ask A ON E.episode_id = A.episode_id
-        JOIN Company C ON A.company_id = C.company_id
-        LEFT JOIN Investment I ON A.company_id = I.company_id AND A.episode_id = I.episode_id;
+        SELECT 
+            pitch_order,
+            COUNT(*) AS total_pitches,
+            AVG(CASE WHEN deal_status = 'Got Deal' THEN 1.0 ELSE 0.0 END) AS deal_success_rate
+        FROM (
+            SELECT 
+                A.episode_id,
+                A.season_id,
+                C.company_name,
+                ROW_NUMBER() OVER (PARTITION BY A.episode_id, A.season_id ORDER BY A.company_id) AS pitch_order,
+                CASE WHEN I.investment_id IS NOT NULL THEN 'Got Deal' ELSE 'No Deal' END AS deal_status
+            FROM Ask A
+            JOIN Company C ON A.company_id = C.company_id
+            LEFT JOIN Investment I ON A.company_id = I.company_id AND A.episode_id = I.episode_id AND A.season_id = I.season_id
+        ) AS pitch_data
+        WHERE pitch_order <= 5  -- Focus on first 5 pitch positions
+        GROUP BY pitch_order
+        ORDER BY pitch_order;
         """
 
     elif "Entrepreneurs from a given city" in query_name:
