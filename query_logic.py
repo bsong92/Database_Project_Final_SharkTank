@@ -15,7 +15,7 @@ def run_query(query_name, user_input=None):
         ORDER BY company_count DESC;
         """
 
-    elif "Avg & range of offers per industry" in query_name:
+    elif "Average & Range of Offers per Industry" in query_name:
         sql = """
         SELECT C.industry_name,
                MIN(A.equity_amount) AS Min_Amount,

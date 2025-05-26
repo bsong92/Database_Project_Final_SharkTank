@@ -64,7 +64,7 @@ if st.session_state.page == "main":
 
         query_list = [
             "1. Industries with most appearances and deal rates",
-            "2. Avg & range of offers per industry",
+            "2. Average & Range of Offers per Industry",
             "3. Valuation trends across seasons",
             "4. Shark collaboration patterns",
             "5. Top sharks by deal frequency & total investment",
@@ -88,7 +88,12 @@ if st.session_state.page == "main":
         if st.button("Run Query"):
             df = run_query(selected_query, user_input)
             if df is not None and not df.empty:
-                st.dataframe(df)
+                # Format numeric columns: commas + 2 decimal points
+                formatted_df = df.copy()
+                for col in formatted_df.select_dtypes(include=['float', 'int']).columns:
+                    formatted_df[col] = formatted_df[col].apply(lambda x: f"{x:,.2f}")
+
+                st.dataframe(formatted_df)
                 st.download_button("Export CSV", df.to_csv(index=False), "results.csv")
             else:
                 st.warning("No results found.")
