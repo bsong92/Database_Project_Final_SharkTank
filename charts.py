@@ -97,15 +97,19 @@ def plot_strategy_heatmap(df):
     if df.empty:
         return px.imshow([[0]], labels=dict(x="Industry", y="Shark", color="Investments"))
 
-    # Step 1: Calculate total investments per shark
-    total_by_shark = df.groupby("shark_name")["investment_count"].sum().sort_values()
+    # Step 1: Sort sharks by total investment count
+    total_by_shark = (
+        df.groupby("shark_name")["investment_count"]
+        .sum()
+        .sort_values(ascending=False)  # ascending=True so most are at bottom
+    )
 
-    # Step 2: Apply the sorted order to the 'shark_name' column
+    # Step 2: Make shark_name a categorical with correct order
     df["shark_name"] = pd.Categorical(df["shark_name"], categories=total_by_shark.index, ordered=True)
 
-    # Step 3: Plot
+    # Step 3: Plot using category orders
     fig = px.density_heatmap(
-        df,
+        df.sort_values("shark_name"),  # Ensure DataFrame respects category order
         x="industry_name",
         y="shark_name",
         z="investment_count",
@@ -113,6 +117,7 @@ def plot_strategy_heatmap(df):
         title="Shark Investment Strategy by Industry"
     )
 
+    # Step 4: Add layout tweaks
     fig.update_layout(
         height=40 * df["shark_name"].nunique(),
         yaxis_nticks=df["shark_name"].nunique(),
