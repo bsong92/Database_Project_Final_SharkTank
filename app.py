@@ -72,26 +72,28 @@ if st.session_state.page == "main":
             "6. Shark deal rate",
             "7. Effect of guest shark presence on deals",
             "8. Impact of pitch order on success",
-            "9. Entrepreneurs from a given city and their deal success rate",
+            "9. Entrepreneurs from a given city/state and their deal stats",
             "10. Entrepreneurs by industry and their deal stats",
             "11. Companies with highest total amount offered",
-            "12. Episodes with highest accepted deal count"
+            "12. Episodes with highest accepted deal count",
+            "13. Average investment stats per season",
         ]
 
     # 🔹 Add description dictionary
     query_descriptions = {
         "1. Industries with Most Appearances and Deal Rates": "Industries ranked by how often they appear and how frequently they get deals.",
         "2. Average & Range of Offers per Industry": "Shows min, max, and average offer amounts and equity across industries.",
-        "3. Valuation trends across seasons": "Traces average valuation trends of companies across seasons.",
+        "3. Valuation trends across seasons": "Traces average valuation trends of industries across seasons.",
         "4. Shark collaboration patterns": "Visualizes which sharks tend to invest together.",
         "5. Top sharks by deal frequency & total investment": "Ranks sharks by deal count and total amount invested.",
-        "6. Shark deal rate by episode and industry": "Breaks down how often sharks invest by episode and industry.",
+        "6. Shark deal rate": "Shows the number of asks and successful deals by each shark.",
         "7. Effect of guest shark presence on deals": "Analyzes if guest sharks affect deal frequency.",
-        "8. Impact of pitch order on success": "Explores whether pitch order affects success rate.",
-        "9. Entrepreneurs from a given city/state and their deal stats": "Finds entrepreneurs from a location and their deal outcomes.",
+        "8. Impact of pitch order on success": "Explores whether pitch order affects success rate. Lower number means an earlier slot.",
+        "9. Entrepreneurs from a given city/state and their deal stats": "Analyze geographic patterns in Shark Tank success rates.",
         "10. Entrepreneurs by industry and their deal stats": "Compares entrepreneur success across industries.",
         "11. Companies with highest total amount offered": "Shows companies that received the largest offers.",
-        "12. Episodes with highest accepted deal count": "Ranks episodes by number of accepted deals."
+        "12. Episodes with highest accepted deal count": "Ranks episodes by number of accepted deals.",
+        "13. Average investment stats per season": "Tracks the number, total, and average of investments made per season.",
     }
 
     # 🔹 Select and run query
@@ -112,6 +114,16 @@ if st.session_state.page == "main":
             st.markdown(f"**Query Summary:** {description}")
 
         if df is not None and not df.empty:
+            if "average_amount_raised" in df.columns:
+                df["average_amount_raised"] = df["average_amount_raised"].apply(lambda x: f"{int(x):,}")  
+            if "total_offered" in df.columns:
+                df["total_offered"] = df["total_offered"].apply(lambda x: f"{int(x):,}")
+            if "avg_deal_rate" in df.columns:
+                df["avg_deal_rate"] = df["avg_deal_rate"].apply(lambda x: f"{x:.2f}%")
+            if "avg_investment" in df.columns:
+                df["avg_investment"] = df["avg_investment"].apply(lambda x: f"${int(x):,}")
+            if "total_invested" in df.columns:
+                df["total_invested"] = df["total_invested"].apply(lambda x: f"${int(x):,}")    
             st.dataframe(df)
             st.download_button("Export CSV", df.to_csv(index=False), "results.csv")
         else:

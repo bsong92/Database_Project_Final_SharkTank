@@ -151,7 +151,7 @@ def run_query(query_name, user_input=None):
         sql = """
         SELECT 
             CASE WHEN has_guest = 1 THEN 'Yes' ELSE 'No' END AS has_guest,
-            AVG(deal_count) AS average_deal_count
+            ROUND(AVG(deal_count), 2) AS average_deal_count
         FROM (
             SELECT 
                 E.episode_id,
@@ -255,7 +255,7 @@ def run_query(query_name, user_input=None):
                 COUNT(DISTINCT CASE WHEN I.investment_id IS NOT NULL THEN C.company_id END) * 1.0 / 
                 NULLIF(COUNT(DISTINCT C.company_id), 0), 3
             ) AS deal_success_rate,
-            ROUND(AVG(CASE WHEN I.investment_id IS NOT NULL THEN I.equity_amount END), 2) AS average_amount_raised
+            ROUND(AVG(CASE WHEN I.investment_id IS NOT NULL THEN I.equity_amount END), 0) AS average_amount_raised
         FROM Entrepreneur E
         JOIN Own O ON E.entrepreneur_id = O.entrepreneur_id
         JOIN Company C ON O.company_id = C.company_id
@@ -305,7 +305,22 @@ def run_query(query_name, user_input=None):
         GROUP BY E.episode_id, S.season_id
         HAVING COUNT(DISTINCT I.investment_id) > 0
         ORDER BY accepted_deals DESC
-        LIMIT 10;
+        LIMIT 20;
+        """
+
+    elif "Average investment stats per season" in query_name:
+        # QUERY 13
+        sql = """
+        SELECT
+            S.season_id,
+            COUNT(I.investment_id) AS total_investments,
+            SUM(I.equity_amount) AS total_invested,
+            ROUND(AVG(I.equity_amount), 0) AS avg_investment
+        FROM Company C
+        JOIN Investment I ON I.company_id = C.company_id
+        JOIN Season S ON I.season_id = S.season_id
+        GROUP BY S.season_id
+        ORDER BY S.season_id;
         """
 
     else:
