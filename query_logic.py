@@ -96,24 +96,26 @@ def run_query(query_name, user_input=None):
         LEFT JOIN Investment I ON A.company_id = I.company_id AND A.episode_id = I.episode_id;
         """
 
-    elif "entrepreneurs from a given city" in query_name:
+    elif "Entrepreneurs from a given city" in query_name:
         sql = f"""
         SELECT E.entrepreneur_name, E.location_city, C.company_name, I.equity_amount
         FROM Entrepreneur E
         JOIN Own O ON E.entrepreneur_id = O.entrepreneur_id
         JOIN Company C ON O.company_id = C.company_id
         LEFT JOIN Investment I ON C.company_id = I.company_id
-        WHERE E.location_city LIKE '%{user_input if user_input else ''}%';
+        WHERE E.location_city LIKE '%{user_input if user_input else ''}%'
+        ORDER BY E.entrepreneur_name;
         """
 
-    elif "entrepreneurs by industry" in query_name:
+    elif "Entrepreneurs by industry" in query_name:
         sql = f"""
         SELECT E.entrepreneur_name, C.company_name, C.industry_name, I.equity_amount
         FROM Entrepreneur E
         JOIN Own O ON E.entrepreneur_id = O.entrepreneur_id
         JOIN Company C ON O.company_id = C.company_id
         LEFT JOIN Investment I ON C.company_id = I.company_id
-        WHERE C.industry_name LIKE '%{user_input if user_input else ''}%';
+        WHERE C.industry_name LIKE '%{user_input if user_input else ''}%'
+        ORDER BY C.industry_name, E.entrepreneur_name;
         """
 
     elif "highest total amount offered" in query_name:
@@ -126,14 +128,16 @@ def run_query(query_name, user_input=None):
         LIMIT 10;
         """
 
-    elif "episodes with highest accepted deal count" in query_name:
+    elif "Episodes with highest accepted deal count" in query_name:
         sql = """
-        SELECT E.episode_id, COUNT(DISTINCT I.investment_id) AS accepted_deals
+        SELECT E.episode_id, S.season_id, COUNT(DISTINCT I.investment_id) AS accepted_deals
         FROM Episode E
-        JOIN Investment I ON E.episode_id = I.episode_id
-        GROUP BY E.episode_id
+        JOIN Season S ON E.season_id = S.season_id
+        LEFT JOIN Investment I ON E.episode_id = I.episode_id AND E.season_id = I.season_id
+        GROUP BY E.episode_id, S.season_id
+        HAVING COUNT(DISTINCT I.investment_id) > 0
         ORDER BY accepted_deals DESC
-        LIMIT 5;
+        LIMIT 10;
         """
 
     else:
