@@ -3,7 +3,15 @@ import networkx as nx
 import plotly.graph_objects as go
 
 def plot_valuation_chart(df):
-    return px.bar(df, x="company_name", y="valuation", color="industry_name", title="Top 10 Valuations")
+    return px.bar(
+        df,
+        x="valuation",
+        y="company_name",
+        color="industry_name",
+        orientation="h",
+        title="Top 10 Valuations",
+        labels={"valuation": "Valuation ($)", "company_name": "Company"},
+    )
 
 def plot_network_graph(df):
     # Calculate edge weights (number of co-investments between sharks)
@@ -88,7 +96,7 @@ def plot_strategy_heatmap(df):
     if df.empty:
         return px.imshow([[0]], labels=dict(x="Industry", y="Shark", color="Investments"))
 
-    return px.density_heatmap(
+    fig = px.density_heatmap(
         df,
         x="industry_name",
         y="shark_name",
@@ -96,3 +104,11 @@ def plot_strategy_heatmap(df):
         color_continuous_scale="Blues",
         title="Shark Investment Strategy by Industry"
     )
+
+    fig.update_layout(
+        height=40 * df["shark_name"].nunique(),
+        yaxis_nticks=df["shark_name"].nunique(),
+        xaxis=dict(showgrid=True, tickangle=45),
+    )
+
+    return fig

@@ -138,6 +138,7 @@ if st.session_state.page == "main":
 
     with tab2:
         st.subheader("📈 Strategy and 🔗 Networking Visuals")
+        
         st.markdown("### 🔎 Strategy Overview")
         strategy_df = get_filtered_data("strategy", filters)
         if not strategy_df.empty:
@@ -150,6 +151,13 @@ if st.session_state.page == "main":
         st.markdown("### 🔗 Shark Co-Investment Network")
         net_df = get_filtered_data("network", filters)
         st.plotly_chart(plot_network_graph(net_df))
+
+        # st.markdown("### 💰 Top 10 Valuations by Company")
+        # valuation_df = get_filtered_data("valuation", filters)
+        # if not valuation_df.empty:
+        #     st.plotly_chart(plot_valuation_chart(valuation_df), use_container_width=True)
+        # else:
+        #     st.warning("No valuation data available.")
 
     with tab3:
         st.subheader("Insert Data into Tables")

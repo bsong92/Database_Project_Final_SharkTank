@@ -28,13 +28,19 @@ def get_filtered_data(category, filters=None):
     
     if category == "valuation":
         query = """
-            SELECT C.company_name, I.valuation, Ind.industry_name, S.start_date AS season
+            SELECT 
+                C.company_name,
+                FORMAT(AVG(I.equity_amount / I.equity_share * 100), 2) AS valuation,
+                Ind.industry_name,
+                S.season_id
             FROM Investment I
             JOIN Company C ON I.company_id = C.company_id
             JOIN Industry Ind ON C.industry_name = Ind.industry_name
             JOIN Season S ON I.season_id = S.season_id
-            WHERE I.valuation IS NOT NULL
-            ORDER BY I.valuation DESC LIMIT 10
+            WHERE I.equity_amount IS NOT NULL AND I.equity_share IS NOT NULL AND I.equity_share != 0
+            GROUP BY C.company_name, Ind.industry_name, S.season_id
+            ORDER BY valuation DESC
+            LIMIT 10
         """
         df = pd.read_sql(query, conn)
         conn.close()
