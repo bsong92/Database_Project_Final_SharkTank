@@ -164,6 +164,9 @@ if st.session_state.page == "main":
 
     with tab3:
         st.subheader("Insert Data into Tables")
+
+        st.markdown("Entities should be inserted before relationships.")
+
         tables = [
             "Ask", "Company", "Contribute", "Entrepreneur", "Episode", "Industry",  
             "Investment", "Judge", "Own", "Season", "Shark"
