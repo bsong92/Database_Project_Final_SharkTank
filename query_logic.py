@@ -47,13 +47,13 @@ def run_query(query_name, user_input=None):
 
     elif "Shark collaboration patterns" in query_name:
         sql = """
-        SELECT S1.shark_name AS Shark1, S2.shark_name AS Shark2, COUNT(*) AS num_collaborations
+        SELECT S1.shark_name AS Shark1, S2.shark_name AS Shark2, COUNT(*) AS Number_of_collaborations
         FROM Contribute C1
         JOIN Contribute C2 ON C1.investment_id = C2.investment_id AND C1.shark_id < C2.shark_id
         JOIN Shark S1 ON C1.shark_id = S1.shark_id
         JOIN Shark S2 ON C2.shark_id = S2.shark_id
         GROUP BY S1.shark_name, S2.shark_name
-        ORDER BY num_collaborations DESC
+        ORDER BY Number_of_collaborations DESC
         LIMIT 10;
         """
 
