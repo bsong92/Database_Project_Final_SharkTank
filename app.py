@@ -110,34 +110,115 @@ if st.session_state.page == "main":
         selected_query = st.selectbox("Choose a query to run:", query_list)
         user_input = None
 
-        # if "industry" in selected_query.lower():
-        #     user_input = st.text_input("Enter Industry (optional):")
-        # elif "city" in selected_query.lower() or "state" in selected_query.lower():
-        #     user_input = st.text_input("Enter City or State (optional):")
+        # Define filter criteria for each query
+        filter_criteria = {
+            "1. Industries with Most Appearances and Deal Rates": "Industry Name",
+            "2. Average & Range of Offers per Industry": "Industry Name", 
+            "3. Valuation trends across seasons": "Season ID",
+            "4. Shark collaboration patterns": "Shark 1",
+            "5. Top sharks by deal frequency & total investment": "Shark Name",
+            "6. Shark deal rate": "Shark Name",
+            "7. Effect of guest shark presence on deals": "Has Guest",
+            "8. Impact of pitch order on success": "Pitch Order",
+            "9. Entrepreneurs from a given city/state and their deal stats": "City",
+            "10. Entrepreneurs by industry and their deal stats": "Industry",
+            "11. Companies with highest total amount offered": "Company Name",
+            "12. Episodes with highest accepted deal count": "Season ID",
+            "13. Average investment stats per season": "Season ID"
+        }
+
+        # Initialize session state for storing query results
+        if "query_results" not in st.session_state:
+            st.session_state.query_results = None
+        if "last_query" not in st.session_state:
+            st.session_state.last_query = None
 
         if st.button("Run Query"):
             df = run_query(selected_query, user_input)
+            st.session_state.query_results = df
+            st.session_state.last_query = selected_query
 
+        # Show results and filtering options if we have data
+        if st.session_state.query_results is not None and not st.session_state.query_results.empty:
+            df = st.session_state.query_results.copy()
+            
             # 🔹 Show query description before results
-            description = query_descriptions.get(selected_query)
+            description = query_descriptions.get(st.session_state.last_query)
             if description:
                 st.markdown(f"**Query Summary:** {description}")
 
-            if df is not None and not df.empty:
-                if "average_amount_raised" in df.columns:
-                    df["average_amount_raised"] = df["average_amount_raised"].apply(lambda x: f"{int(x):,}")  
-                if "total_offered" in df.columns:
-                    df["total_offered"] = df["total_offered"].apply(lambda x: f"{int(x):,}")
-                if "avg_deal_rate" in df.columns:
-                    df["avg_deal_rate"] = df["avg_deal_rate"].apply(lambda x: f"{x:.2f}%")
-                if "avg_investment" in df.columns:
-                    df["avg_investment"] = df["avg_investment"].apply(lambda x: f"${int(x):,}")
-                if "total_invested" in df.columns:
-                    df["total_invested"] = df["total_invested"].apply(lambda x: f"${int(x):,}")    
-                st.dataframe(df)
-                st.download_button("Export CSV", df.to_csv(index=False), "results.csv")
-            else:
-                st.warning("No results found.")
+            # Add filter dropdown based on the query type
+            filter_type = filter_criteria.get(st.session_state.last_query)
+            if filter_type:
+                st.markdown("---")
+                st.markdown(f"### 🔍 Filter Results by {filter_type}")
+                
+                # Get unique values for the filter column
+                filter_column = None
+                filter_options = ["All"]
+                
+                if filter_type == "Industry Name":
+                    if "industry_name" in df.columns:
+                        filter_column = "industry_name"
+                    elif "industry" in df.columns:
+                        filter_column = "industry"
+                elif filter_type == "Season ID":
+                    if "season_id" in df.columns:
+                        filter_column = "season_id"
+                elif filter_type == "Shark Name":
+                    if "shark_name" in df.columns:
+                        filter_column = "shark_name"
+                elif filter_type == "Shark 1":
+                    if "Shark1" in df.columns:
+                        filter_column = "Shark1"
+                elif filter_type == "Has Guest":
+                    if "has_guest" in df.columns:
+                        filter_column = "has_guest"
+                elif filter_type == "Pitch Order":
+                    if "pitch_order" in df.columns:
+                        filter_column = "pitch_order"
+                elif filter_type == "City":
+                    if "city" in df.columns:
+                        filter_column = "city"
+                elif filter_type == "Company Name":
+                    if "company_name" in df.columns:
+                        filter_column = "company_name"
+                
+                if filter_column and filter_column in df.columns:
+                    unique_values = sorted(df[filter_column].unique())
+                    filter_options.extend([str(val) for val in unique_values])
+                    
+                    selected_filter = st.selectbox(f"Filter by {filter_type}:", filter_options)
+                    
+                    # Apply filter if not "All"
+                    if selected_filter != "All":
+                        if filter_type in ["Season ID", "Pitch Order"]:
+                            # For numeric filters
+                            df = df[df[filter_column] == int(selected_filter)]
+                        else:
+                            # For string filters
+                            df = df[df[filter_column] == selected_filter]
+                    
+                    if df.empty:
+                        st.warning(f"No results found for {filter_type}: {selected_filter}")
+                        df = st.session_state.query_results.copy()  # Reset to original data
+
+            # Format numeric columns for display
+            if "average_amount_raised" in df.columns:
+                df["average_amount_raised"] = df["average_amount_raised"].apply(lambda x: f"{int(x):,}" if pd.notna(x) else "")  
+            if "total_offered" in df.columns:
+                df["total_offered"] = df["total_offered"].apply(lambda x: f"{int(x):,}" if pd.notna(x) else "")
+            if "avg_deal_rate" in df.columns:
+                df["avg_deal_rate"] = df["avg_deal_rate"].apply(lambda x: f"{x:.2f}%" if pd.notna(x) else "")
+            if "avg_investment" in df.columns:
+                df["avg_investment"] = df["avg_investment"].apply(lambda x: f"${int(x):,}" if pd.notna(x) else "")
+            if "total_invested" in df.columns:
+                df["total_invested"] = df["total_invested"].apply(lambda x: f"${int(x):,}" if pd.notna(x) else "")    
+            
+            st.dataframe(df)
+            st.download_button("Export CSV", df.to_csv(index=False), "results.csv")
+        elif st.session_state.query_results is not None:
+            st.warning("No results found.")
 
     with tab2:
         st.subheader("📈 Strategy and 🔗 Networking Visuals")
