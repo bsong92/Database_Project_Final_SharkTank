@@ -20,8 +20,9 @@ if st.session_state.page == "home":
 
     This database helps you:
     - Analyze trends in investments, industries, and shark behavior
-    - Visualize co-investment networks and strategic patterns
+    - Visualize investment strategy patterns
     - Insert new data entries like companies, entrepreneurs, or episodes
+    - Share underlying Shark-Tank data used to build the GUI
 
     Use the navigation tabs to explore or manage data.
     """)
@@ -61,7 +62,7 @@ if st.session_state.page == "main":
         "guest": guest_status
     }
 
-    tab1, tab2, tab3, tab4 = st.tabs(["📊 Query Explorer", "📈 Strategy & Networking", "➕ Insert Data", "📂 Browse Raw Data"])
+    tab1, tab2, tab3, tab4 = st.tabs(["📊 Query Explorer", "📈 Investment Strategy", "➕ Insert Data", "📂 Browse Raw Data"])
 
     with tab1:
         st.subheader("Explore the Data")
@@ -221,7 +222,7 @@ if st.session_state.page == "main":
             st.warning("No results found.")
 
     with tab2:
-        st.subheader("📈 Strategy and 🔗 Networking Visuals")
+        st.subheader("📈 Investment Strategy Visuals")
         
         st.markdown("### 🔎 Strategy Overview")
         strategy_df = get_filtered_data("strategy", filters)
