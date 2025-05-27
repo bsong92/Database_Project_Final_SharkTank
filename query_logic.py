@@ -90,7 +90,6 @@ def run_query(query_name, user_input=None):
         # - C1.shark_id < C2.shark_id prevents duplicate pairs (A,B) and (B,A)
         # - Multiple JOINs to get shark names for both partners
         # - COUNT(*) to quantify collaboration frequency
-        # - LIMIT 10 for top partnerships only
         sql = """
         SELECT S1.shark_name AS Shark1, S2.shark_name AS Shark2, COUNT(*) AS Number_of_collaborations
         FROM Contribute C1
@@ -99,7 +98,6 @@ def run_query(query_name, user_input=None):
         JOIN Shark S2 ON C2.shark_id = S2.shark_id
         GROUP BY S1.shark_name, S2.shark_name
         ORDER BY Number_of_collaborations DESC
-        LIMIT 10;
         """
 
     elif "Top sharks by deal frequency" in query_name:
@@ -292,14 +290,12 @@ def run_query(query_name, user_input=None):
         # - SUM(I.equity_amount) aggregates all investment amounts per company
         # - GROUP BY company_name to aggregate multiple investments per company
         # - ORDER BY total_offered DESC to rank by total investment amount
-        # - LIMIT 10 to show top companies only
         sql = """
         SELECT C.company_name, SUM(I.equity_amount) AS total_offered
         FROM Investment I
         JOIN Company C ON I.company_id = C.company_id
         GROUP BY C.company_name
         ORDER BY total_offered DESC
-        LIMIT 10;
         """
 
     elif "Episodes with highest accepted deal count" in query_name:
@@ -313,7 +309,6 @@ def run_query(query_name, user_input=None):
         # - GROUP BY episode and season for proper aggregation
         # - HAVING clause filters out episodes with zero deals
         # - ORDER BY accepted_deals DESC to rank most active episodes
-        # - LIMIT 10 to show top episodes only
         sql = """
         SELECT E.episode_id, S.season_id, COUNT(DISTINCT I.investment_id) AS accepted_deals
         FROM Episode E
@@ -322,7 +317,6 @@ def run_query(query_name, user_input=None):
         GROUP BY E.episode_id, S.season_id
         HAVING COUNT(DISTINCT I.investment_id) > 0
         ORDER BY accepted_deals DESC
-        LIMIT 20;
         """
 
     elif "Average investment stats per season" in query_name:

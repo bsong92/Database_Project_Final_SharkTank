@@ -15,8 +15,8 @@ def insert_into_table(table):
         if table == "Industry":
             st.markdown("### Insert New Industry")
             industry_name = st.text_input("Industry Name*", help="Name of the industry (e.g., 'Technology', 'Food & Beverage')")
-            market_size = st.text_input("Market Size", help="Market size description (optional)")
-            growth_rate = st.text_input("Growth Rate", help="Growth rate description (optional)")
+            market_size = st.text_input("Market Size*", help="Market size description (optional)")
+            growth_rate = st.text_input("Growth Rate*", help="Growth rate description (optional)")
             
             if st.button("Insert Industry", type="primary"):
                 if industry_name:

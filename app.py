@@ -163,6 +163,11 @@ if st.session_state.page == "main":
                         filter_column = "industry_name"
                     elif "industry" in df.columns:
                         filter_column = "industry"
+                elif filter_type == "Industry":
+                    if "industry" in df.columns:
+                        filter_column = "industry"
+                    elif "industry_name" in df.columns:
+                        filter_column = "industry_name"
                 elif filter_type == "Season ID":
                     if "season_id" in df.columns:
                         filter_column = "season_id"
