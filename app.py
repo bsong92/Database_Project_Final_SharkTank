@@ -90,7 +90,7 @@ if st.session_state.page == "main":
     }
 
     # TAB ORGANIZATION
-    # Main application functionality is organized into 4 distinct tabs
+    # Main application functionality is organized into 4 distinct tabs displayed at the top of the page
     tab1, tab2, tab3, tab4 = st.tabs(["📊 Query Explorer", "📈 Investment Strategy", "➕ Insert Data", "📂 Browse Raw Data"])
 
     # TAB 1: QUERY EXPLORER
