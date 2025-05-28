@@ -69,9 +69,9 @@ def run_query(query_name, user_input=None):
             ORDER BY company_count DESC;
         """
 
-    elif "Average & Range of Offers per Industry" in query_name:
-        # QUERY 2: Average & Range of Offers per Industry
-        # PURPOSE: Summarize investment behavior by showing offer ranges and equity per industry
+    elif "Average & Range of Asks per Industry" in query_name:
+        # QUERY 2: Average & Range of Asks per Industry
+        # PURPOSE: Summarize investment behavior by showing ask ranges and equity per industry
         # BUSINESS LOGIC: Provides insight into typical deal structures and how aggressive asks are
         # STAKEHOLDERS: Entrepreneurs (pricing strategy), Investors (market benchmarks)
         # TECHNICAL APPROACH:
@@ -260,11 +260,11 @@ def run_query(query_name, user_input=None):
         ORDER BY pitch_order;
         """
 
-    elif "Entrepreneurs from a given city" in query_name:
-        # QUERY 9: Entrepreneurs from a given city/state and their deal stats
+    elif "Companies from a given city" in query_name:
+        # QUERY 9: Companies from a given city/state and their deal stats
         # PURPOSE: Analyze geographic patterns in Shark Tank success rates
-        # BUSINESS LOGIC: Identifies which cities/states produce most successful entrepreneurs
-        # STAKEHOLDERS: Economic development agencies, Entrepreneurs (relocation decisions)
+        # BUSINESS LOGIC: Identifies which cities/states produce most successful companies
+        # STAKEHOLDERS: Economic development agencies, Companies (relocation decisions)
         # TECHNICAL APPROACH:
         # - JOIN chain: Entrepreneur -> Own -> Company -> Investment to link location to deals
         # - GROUP BY city and state for geographic aggregation
@@ -327,8 +327,8 @@ def run_query(query_name, user_input=None):
         ORDER BY deal_success_rate DESC, total_companies DESC;
         """
 
-    elif "highest total amount offered" in query_name:
-        # QUERY 11: Companies with highest total amount offered
+    elif "highest total amount invested" in query_name:
+        # QUERY 11: Companies with highest total amount invested
         # PURPOSE: Identify companies that received the largest total investment amounts
         # BUSINESS LOGIC: Shows which companies attracted the most financial interest from sharks
         # STAKEHOLDERS: Media (success stories), Entrepreneurs (benchmarking)
@@ -336,14 +336,14 @@ def run_query(query_name, user_input=None):
         # - INNER JOIN between Investment and Company (only companies with investments)
         # - SUM(I.equity_amount) aggregates all investment amounts per company
         # - GROUP BY company_name to aggregate multiple investments per company
-        # - ORDER BY total_offered DESC to rank by total investment amount
+        # - ORDER BY total_invested DESC to rank by total investment amount
         # - Simple but effective query for identifying top performers
         sql = """
-        SELECT C.company_name, SUM(I.equity_amount) AS total_offered
+        SELECT C.company_name, SUM(I.equity_amount) AS total_invested
         FROM Investment I
         JOIN Company C ON I.company_id = C.company_id
         GROUP BY C.company_name
-        ORDER BY total_offered DESC
+        ORDER BY total_invested DESC
         """
 
     elif "Episodes with highest accepted deal count" in query_name:
