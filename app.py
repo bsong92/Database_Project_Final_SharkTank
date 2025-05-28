@@ -102,16 +102,16 @@ if st.session_state.page == "main":
         # 13 pre-built analytical queries for business insights
         query_list = [
             "1. Industries with Most Appearances and Deal Rates",
-            "2. Average & Range of Offers per Industry",
+            "2. Average & Range of Asks per Industry",
             "3. Valuation trends across seasons",
             "4. Shark collaboration patterns",
             "5. Top sharks by deal frequency & total investment",
             "6. Shark deal rate",
             "7. Effect of guest shark presence on deals",
             "8. Impact of pitch order on success",
-            "9. Entrepreneurs from a given city/state and their deal stats",
+            "9. Companies from a given city/state and their deal stats",
             "10. Companies by industry and their deal stats",
-            "11. Companies with highest total amount offered",
+            "11. Companies with highest total amount invested",
             "12. Episodes with highest accepted deal count",
             "13. Average investment stats per season",
         ]
@@ -120,16 +120,16 @@ if st.session_state.page == "main":
         # Business context for each analytical query
         query_descriptions = {
             "1. Industries with Most Appearances and Deal Rates": "Industries ranked by how often they appear and how frequently they get deals.",
-            "2. Average & Range of Offers per Industry": "Shows min, max, and average offer amounts and equity across industries.",
+            "2. Average & Range of Asks per Industry": "Shows min, max, and average asks amounts and equity across industries.",
             "3. Valuation trends across seasons": "Traces average valuation trends of industries across seasons.",
             "4. Shark collaboration patterns": "Visualizes which sharks tend to invest together.",
             "5. Top sharks by deal frequency & total investment": "Ranks sharks by deal count and total amount invested.",
             "6. Shark deal rate": "Shows the number of asks and successful deals by each shark.",
             "7. Effect of guest shark presence on deals": "Analyzes if guest sharks affect deal frequency.",
             "8. Impact of pitch order on success": "Explores whether pitch order affects success rate. Lower number means an earlier slot.",
-            "9. Entrepreneurs from a given city/state and their deal stats": "Analyze geographic patterns in Shark Tank success rates.",
-            "10. Companies by industry and their deal stats": "Compares entrepreneur success across industries.",
-            "11. Companies with highest total amount offered": "Shows companies that received the largest offers.",
+            "9. Companies from a given city/state and their deal stats": "Analyze geographic patterns in Shark Tank success rates.",
+            "10. Companies by industry and their deal stats": "Compares company success across industries.",
+            "11. Companies with highest total amount invested": "Shows companies that received the largest investments.",
             "12. Episodes with highest accepted deal count": "Ranks episodes by number of accepted deals.",
             "13. Average investment stats per season": "Tracks the number, total, and average of investments made per season.",
         }
@@ -149,16 +149,16 @@ if st.session_state.page == "main":
         # Maps each query to its primary filter dimension for result filtering
         filter_criteria = {
             "1. Industries with Most Appearances and Deal Rates": "Industry Name",
-            "2. Average & Range of Offers per Industry": "Industry Name", 
+            "2. Average & Range of Asks per Industry": "Industry Name", 
             "3. Valuation trends across seasons": "Season ID",
             "4. Shark collaboration patterns": "Shark 1",
             "5. Top sharks by deal frequency & total investment": "Shark Name",
             "6. Shark deal rate": "Shark Name",
             "7. Effect of guest shark presence on deals": "Has Guest",
             "8. Impact of pitch order on success": "Pitch Order",
-            "9. Entrepreneurs from a given city/state and their deal stats": "City",
+            "9. Companies from a given city/state and their deal stats": "City",
             "10. Companies by industry and their deal stats": "Industry",
-            "11. Companies with highest total amount offered": "Company Name",
+            "11. Companies with highest total amount invested": "Company Name",
             "12. Episodes with highest accepted deal count": "Season ID",
             "13. Average investment stats per season": "Season ID"
         }
