@@ -39,20 +39,20 @@ def get_filtered_data(category, filters=None):
     cursor = conn.cursor(dictionary=True)
     
     # DROPDOWN DATA RETRIEVAL SECTION
-    # These queries populate the filter dropdowns in the Streamlit sidebar
+    # These queries populate the possible values in the Streamlit sidebar
     
     if category == "industry":
-        # Get all unique industry names for the industry filter dropdown
+        # Get all unique industry names for the industry possible values
         cursor.execute("SELECT DISTINCT industry_name FROM Industry")
         return [row["industry_name"] for row in cursor.fetchall()]
 
     if category == "shark":
-        # Get all unique shark names for the shark filter dropdown
+        # Get all unique shark names for the shark possible values
         cursor.execute("SELECT DISTINCT shark_name FROM Shark")
         return [row["shark_name"] for row in cursor.fetchall()]
 
     if category == "season":
-        # Get all season IDs ordered numerically for the season filter dropdown
+        # Get all season IDs ordered numerically for the season possible values
         cursor.execute("SELECT DISTINCT season_id FROM Season ORDER BY season_id")
         return [row["season_id"] for row in cursor.fetchall()]
 
@@ -69,51 +69,7 @@ def get_filtered_data(category, filters=None):
     # VISUALIZATION DATA RETRIEVAL SECTION
     # These queries provide data specifically formatted for charts and graphs
     
-    if category == "valuation":
-        """
-        Calculates company valuations based on investment deals.
-        Valuation formula: (equity_amount / equity_share) * 100
-        Returns top 10 valuations for the valuation bar chart.
-        """
-        query = """
-            SELECT 
-                C.company_name,
-                FORMAT(AVG(I.equity_amount / I.equity_share * 100), 2) AS valuation,
-                Ind.industry_name,
-                S.season_id
-            FROM Investment I
-            JOIN Company C ON I.company_id = C.company_id
-            JOIN Industry Ind ON C.industry_name = Ind.industry_name
-            JOIN Season S ON I.season_id = S.season_id
-            WHERE I.equity_amount IS NOT NULL AND I.equity_share IS NOT NULL AND I.equity_share != 0
-            GROUP BY C.company_name, Ind.industry_name, S.season_id
-            ORDER BY valuation DESC
-            LIMIT 10
-        """
-        df = pd.read_sql(query, conn)
-        conn.close()
-        return df
-
-    if category == "network":
-        """
-        Identifies shark co-investment relationships for network graph visualization.
-        Finds pairs of sharks who invested in the same deals.
-        Used to create the shark collaboration network graph.
-        """
-        query = """
-            SELECT S1.shark_name AS from_shark, S2.shark_name AS to_shark
-            FROM Contribute C1
-            JOIN Investment I ON C1.investment_id = I.investment_id
-            JOIN Contribute C2 ON C1.investment_id = C2.investment_id AND C1.shark_id != C2.shark_id
-            JOIN Shark S1 ON C1.shark_id = S1.shark_id
-            JOIN Shark S2 ON C2.shark_id = S2.shark_id
-            LIMIT 100
-        """
-        df = pd.read_sql(query, conn)
-        conn.close()
-        return df
-
-    elif category == "strategy":
+    if category == "strategy":
         """
         Analyzes shark investment strategies by industry.
         Counts how many investments each shark made in each industry.
