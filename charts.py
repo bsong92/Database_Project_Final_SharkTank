@@ -141,11 +141,11 @@ def plot_strategy_heatmap(df):
         return px.imshow([[0]], labels=dict(x="Industry", y="Shark", color="Investments"))
 
     # STEP 1: Calculate total investments per shark for ordering
-    # This ensures most active sharks appear at the top of the heatmap
+    # This ensures most active sharks appear at the bottom of the heatmap next to the x-axis
     total_by_shark = (
         df.groupby("shark_name")["investment_count"]
         .sum()
-        .sort_values(ascending=True)  # Most active sharks first
+        .sort_values(ascending=False)  # Most active sharks first
     )
 
     # STEP 2: Convert shark names to ordered categorical data
