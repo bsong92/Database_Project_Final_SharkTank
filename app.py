@@ -2,7 +2,7 @@
 # Core libraries for the Streamlit web application
 import streamlit as st
 from db import get_filtered_data  # Database connection and data retrieval functions
-from charts import plot_valuation_chart, plot_network_graph, plot_strategy_heatmap  # Visualization functions
+from charts import plot_strategy_heatmap  # Visualization functions
 from query_logic import run_query  # Business intelligence query execution
 from insert_data import insert_into_table  # Data insertion functionality
 import pandas as pd  # Data manipulation and analysis
@@ -57,11 +57,11 @@ if st.session_state.page == "main":
     Use the **tabs below** to explore insights or add new data to the Shark Tank database.
     """)
 
-    # GLOBAL SIDEBAR FILTERS SECTION
-    # These filters are available across all tabs and affect data display
+    # GLOBAL POSSIBLE VALUES SECTION
+    # These values are available across all tabs and affect data display
     st.sidebar.header("Possible Values")
     
-    # Populate filter dropdowns with data from database
+    # Show possible values for database queries
     industry_data = get_filtered_data("industry") or []
     industry = st.sidebar.selectbox("Industry", options=["All"] + industry_data)
     
@@ -79,7 +79,7 @@ if st.session_state.page == "main":
     
     guest_status = st.sidebar.selectbox("Guest Status", options=["All", "Guest", "Main Shark"])
 
-    # Organize filters into dictionary for easy passing to functions
+    # Organize possible values into dictionary for easy passing to functions
     filters = {
         "industry": industry,
         "shark": shark,
