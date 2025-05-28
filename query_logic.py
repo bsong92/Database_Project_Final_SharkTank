@@ -249,8 +249,8 @@ def run_query(query_name, user_input=None):
         ORDER BY deal_success_rate DESC, total_companies DESC;
         """
 
-    elif "Entrepreneurs by industry" in query_name:
-        # QUERY 10: Entrepreneurs by industry and their deal stats
+    elif "Companies by industry" in query_name:
+        # QUERY 10: Companies by industry and their deal stats
         # PURPOSE: Analyze industry-level success patterns and investment amounts
         # BUSINESS LOGIC: Shows which industries have highest success rates and typical funding amounts
         # TECHNICAL APPROACH:
